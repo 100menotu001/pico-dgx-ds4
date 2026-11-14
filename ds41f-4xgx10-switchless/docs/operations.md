@@ -91,5 +91,11 @@ the same requests.
 
 The counters are per-process and begin at zero when dsfront starts. **A restart resets them all to
 zero, together with the session and prefix-cache state**, so a scraper should read a drop to zero as a
-restart, not as a traffic drop: they return to zero together, never one without the others. There is
-no per-slot or queue-depth gauge beyond the two request gauges.
+restart, not as a traffic drop: they return to zero together, never one without the others.
+
+A scraper that keeps its own baseline across a restart must re-seed it for the same reason: the
+first window after a restart divides by a prefill sum that begins at zero, so a baseline carried
+over from before the restart reads one absurd rate before the series line up again. Discarding the
+first post-restart window is the simple version of that rule.
+
+There is no per-slot or queue-depth gauge beyond the two request gauges.
